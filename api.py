@@ -1,3 +1,4 @@
+
 from flask import Flask, request, jsonify
 from werkzeug.utils import secure_filename
 import os
@@ -47,27 +48,3 @@ def upload_page():
 
 if __name__ == '__main__':
     app.run(debug=True, host='localhost', port=3300)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
