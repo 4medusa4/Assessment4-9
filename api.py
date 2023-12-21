@@ -1,30 +1,74 @@
 from flask import Flask, request, jsonify
+from werkzeug.utils import secure_filename
 import os
+import imghdr
 
 app = Flask(__name__)
 
-# Define the path to the image folder
 image_folder_path = r'C:\Users\Menuka\Desktop\9\9'
 
-@app.route('/upload', methods=['POST'])
-def upload_image():
-    try:
-        # Check if the 'file' key is in the request
-        if 'file' not in request.files:
-            return jsonify({'status': 'error', 'message': 'No file part'})
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
-        file = request.files['file']
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-        # Check if the file has a name
-        if file.filename == '':
-            return jsonify({'status': 'error', 'message': 'No selected file'})
+@app.route('/')
+def home():
+    return jsonify({'status': 'success', 'message': 'Welcome to the home page'})
 
-        # Save the file to the specified folder
-        file.save(os.path.join(image_folder_path, file.filename))
+@app.route('/upload', methods=['GET', 'POST'])
+def upload_page():
+    if request.method == 'POST':
+        try:
+            # Check if the 'file' key is in the request
+            if 'file' not in request.files:
+                return jsonify({'status': 'error', 'message': 'No file part'})
 
-        return jsonify({'status': 'success', 'message': 'File uploaded successfully'})
-    except Exception as e:
-        return jsonify({'status': 'error', 'message': str(e)})
+            file = request.files['file']
+
+            # Check if the file has a name
+            if file.filename == '':
+                return jsonify({'status': 'error', 'message': 'No selected file'})
+
+            # Check if the file type is allowed
+            if not allowed_file(file.filename):
+                return jsonify({'status': 'error', 'message': 'Invalid file type'})
+
+            # Generate a unique filename and save the file
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(image_folder_path, filename))
+
+            return jsonify({'status': 'success', 'message': 'File uploaded successfully'})
+        except Exception as e:
+            return jsonify({'status': 'error', 'message': str(e)})
+
+    # For GET requests to the '/upload' endpoint
+    return jsonify({'status': 'success', 'message': 'This is the upload page. Use a POST request to upload a file.'})
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=3300)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
