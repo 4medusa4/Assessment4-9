@@ -1,7 +1,6 @@
 from flask import Flask, request, jsonify
 from werkzeug.utils import secure_filename
 import os
-import imghdr
 
 app = Flask(__name__)
 
@@ -15,7 +14,6 @@ def allowed_file(filename):
 @app.route('/')
 def home():
     return jsonify({'status': 'success', 'message': 'Welcome to the home page'})
-
 @app.route('/upload', methods=['GET', 'POST'])
 def upload_page():
     if request.method == 'POST':
@@ -38,7 +36,9 @@ def upload_page():
             filename = secure_filename(file.filename)
             file.save(os.path.join(image_folder_path, filename))
 
+            # Provide a success message after successfully uploading the file
             return jsonify({'status': 'success', 'message': 'File uploaded successfully'})
+            
         except Exception as e:
             return jsonify({'status': 'error', 'message': str(e)})
 
@@ -46,8 +46,7 @@ def upload_page():
     return jsonify({'status': 'success', 'message': 'This is the upload page. Use a POST request to upload a file.'})
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=3300)
-
+    app.run(debug=True, host='localhost', port=3300)
 
 
 
